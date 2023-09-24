@@ -2,12 +2,28 @@ const PORT = 8000
 const express = require('express')
 const cors = require('cors')
 require('dotenv').config()
+
 const app = express()
 app.use(express.json())
 app.use(cors())
 
-const API_KEY = process.env.API_KEY
+const API_KEY = process.env.API_KEY;
 
+app.post('/save-story', async (req, res) => {
+    const { prompt, generatedStory } = req.body;
+  
+    const newStory = new Story({ userId: prompt, content: generatedStory });
+  
+    try {
+      await newStory.save();
+      console.log('Story saved successfully.');
+      res.status(200).json({ message: 'Story saved successfully' });
+    } catch (error) {
+      console.error('Failed to save story:', error);
+      res.status(500).json({ error: 'Failed to save story' });
+    }
+  });
+  
 app.post('/completions', async(req, res) => {
     const options = {
       method : "POST",
@@ -30,4 +46,4 @@ app.post('/completions', async(req, res) => {
         console.log(error)
     }
 })
-app.listen(PORT, () => console.log('Your server is running on PORT ' + PORT))
+app.listen(PORT, () => {console.log('Your server is running on PORT ' + PORT)})

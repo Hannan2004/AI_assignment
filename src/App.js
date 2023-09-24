@@ -60,7 +60,29 @@ const App = () => {
 
    const currentStory = previousStories.filter(previousStories => previousStories.title === currentTitle)
    const uniqueTitles = Array.from (new Set(previousStories.map(previousStories => previousStories.title)))
+   
+   const saveStory = async (story) => {
+    try {
+       const response = await fetch('http://localhost:8000/api/save-story', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            title: story.title,
+            content: story.content,
+        }),
+       })
 
+       if(response.ok) {
+        console.log('Story saved successfully');
+       } else {
+        console.error('Failed to save the story');
+       }
+    } catch (error) {
+        console.log(error);
+    }
+   }
   return (
       <div className="app">
         <section className="side-bar">
@@ -69,16 +91,19 @@ const App = () => {
               {uniqueTitles?.map((uniqueTitles, index) => <li key={index} onClick={handleClick}>{uniqueTitles}</li>)}
           </ul>
           <nav>
-            <p>#</p>
+          <button>Leaderboard</button>
           </nav>
         </section>
         <section className="main">
           <h1>AI Story Generator</h1>
           <ul className="feed">
-              {currentStory?.map((chatMessage, index) => <li key={index}>
+              {currentStory?.map((chatMessage, index) => ( 
+              <li key={index}>
                   <p className="role">{chatMessage.role}</p>
                   <p>{chatMessage.content}</p>
-              </li> )}
+                  <button onClick={() => saveStory(message)}>Save</button>
+              </li>
+               ))}
           </ul>
           <div className="bottom-section">
             <div className="input-container">
